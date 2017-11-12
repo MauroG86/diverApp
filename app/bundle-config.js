@@ -7,13 +7,13 @@ if (global.TNS_WEBPACK) {
         () => require("../node_modules/nativescript-pro-ui/sidedrawer"));
 
     global.registerModule("shared/my-drawer/MyDrawer", () => require("./shared/my-drawer/MyDrawer"));
-    global.registerModule("startseite/startseite-page", () => require("./startseite/startseite"));
-    global.registerModule("divesite/divesite-divesite", () => require("./divesite/divesite-page"));
-    global.registerModule("divelogs/divelogs-page", () => require("./divelogs/divelogs-page"));
-    global.registerModule("divebuddies/divebuddies-page", () => require("./divebuddies/divebuddies-page"));
-    global.registerModule("events/events-page", () => require("./events/events-page"));
-    global.registerModule("equipment/equipment-page", () => require("./equipment/equipment-page"));
-    global.registerModule("certification/certification-page", () => require("./certification/certification-page"));
-    global.registerModule("florafauna/florafauna-page", () => require("./florafauna/florafauna-page"));
-    global.registerModule("einstellungen/einstellungen-page", () => require("./einstellungen/einstellungen-page"));
+    global.registerModule("views/startseite/startseite-page", () => require("./startseite/startseite"));
+    global.registerModule("views/divesite/divesite-divesite", () => require("./divesite/divesite-page"));
+    global.registerModule("views/divelogs/divelogs-page", () => require("./divelogs/divelogs-page"));
+    global.registerModule("views/divebuddies/divebuddies-page", () => require("./divebuddies/divebuddies-page"));
+    global.registerModule("views/events/events-page", () => require("./events/events-page"));
+    global.registerModule("views/equipment/equipment-page", () => require("./equipment/equipment-page"));
+    global.registerModule("views/certification/certification-page", () => require("./certification/certification-page"));
+    global.registerModule("views/florafauna/florafauna-page", () => require("./florafauna/florafauna-page"));
+    global.registerModule("views/einstellungen/einstellungen-page", () => require("./einstellungen/einstellungen-page"));
 }
