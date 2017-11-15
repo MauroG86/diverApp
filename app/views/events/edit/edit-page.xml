@@ -1,0 +1,29 @@
+<Page
+    class="page"
+    navigatingTo="onNavigatingTo"  
+    xmlns="http://www.nativescript.org/tns.xsd"
+    xmlns:dd="nativescript-drop-down"
+    xmlns:CheckBox="nativescript-checkbox" loaded="pageLoaded">
+
+    <Page.actionBar>
+        <ActionBar class="action-bar" title="">
+            <ActionItem>
+                <Label text="&#xf00c;" class="font-awesome" tap="saveChanges"/>
+            </ActionItem>
+            <ActionItem>
+                <Label text="&#xf00d;" class="font-awesome" tap="discardChanges"/>
+            </ActionItem>
+        </ActionBar>
+    </Page.actionBar>
+        <GridLayout rows="auto, auto, auto, auto, auto, auto, auto, *, auto">
+            <TextField hint="Name" text="{{ event.name }}"/>
+            <dd:DropDown hint="Typ" items="{{ types }}" selectedIndex="{{ selectedType }}" row="1" selectedIndexChanged="typeChanged" style="color: black; margin-left: -15px"/>
+            <dd:DropDown hint="Veranstaltungsort" items="{{ divesites }}" selectedIndex="{{ selectedDivesite }}" selectedIndexChanged="divesiteChanged" row="2" style="color: black; margin-left: -15px"/>
+            <TextField id="dateField" hint="Tag" editable="false" text="{{ event.date }}" tap="selectDate" row="3"/>
+            <TextField id="timeField" hint="Uhrzeit" editable="false" text="{{ event.time }}" tap="selectTime" row="4" />
+            <CheckBox:CheckBox text="Öffentlich" checked="{{ event.public }}" row="5"/>
+            <TextView textWrap="true" hint="Kommentar (optional)" text="{{ event.comment }}" row="6"/>
+            <Button visibility="{{ deleteVisible }}" text="Event löschen" tap="deleteEvent" row="8"/>
+        </GridLayout>
+
+</Page>

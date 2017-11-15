@@ -1,0 +1,36 @@
+Page {
+    background-color: white;
+    font-size: 20;
+}
+
+ListView {
+    margin: 5;
+    border-radius: 0;
+}
+
+Label {
+    margin: 10;
+    horizontal-align: left;
+    vertical-align: center;
+}
+
+TextField {
+    border-width: 5;
+    border-style: solid;
+    border-color: #034793;
+}
+
+Image {
+    margin: 10;
+}
+
+Button {
+  background-color: #326ee5;
+  color: #ffffff;
+}
+
+.font-awesome {
+    font-family: "FontAwesome";
+    font-size: 35;
+    color: #326ee5;
+}

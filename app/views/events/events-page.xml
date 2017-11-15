@@ -18,6 +18,9 @@
             tap="onDrawerButtonTap"
             ios.position="left">
         </ActionItem>
+        <ActionItem>
+            <Label text="&#xf067;" class="font-awesome" style="color: #ffffff; padding-right: 35px; font-size: 25;" tap="newEvent"/>
+        </ActionItem>
         <Label class="action-bar-title" text="Events"></Label>
     </ActionBar>
 
@@ -57,10 +60,40 @@
         Always wrap content in a layout component.
         -->
         <nsDrawer:RadSideDrawer.mainContent>
-            <GridLayout class="page-content">
-                <Label class="page-icon fa" text="&#xf1ea;"></Label>
-                <Label class="page-placeholder" text="<!-- Page content goes here -->"></Label>
-            </GridLayout>
+            <TabView>
+                <TabView.items>
+                 <TabViewItem title="Öffentlich">
+                   <TabViewItem.view>
+                        <ListView items="{{ publicEvents }}" id="publicEventsView" row="0">
+                            <ListView.itemTemplate>
+                                <GridLayout rows="auto, auto, auto" columns="*, 5*, *">
+                                    <Label text="{{ name }}" style="font-weight: bold;" colSpan="2" textWrap="true"/>
+                                    <Label text="&#xf041;" style="padding-left: 30px" class="font-awesome" row="2" tap="viewDivesite"/>
+                                    <Label text="{{ divesite }}" row="2" col="1" textWrap="true" textWrap="true"/>
+                                    <Label text="{{ date + ' um ' + time + ' Uhr'}}" row="1" colSpan="2" textWrap="true"/>
+                                    <Label text="&#xf061;" class="font-awesome" col="3" rowSpan="3" tap="viewDetails" />
+                                </GridLayout>
+                            </ListView.itemTemplate>
+                        </ListView>
+                   </TabViewItem.view>
+                 </TabViewItem>
+                 <TabViewItem title="Meine Events">
+                   <TabViewItem.view>
+                        <ListView items="{{ myEvents }}" id="myEventsView" row="0">
+                            <ListView.itemTemplate>
+                                <GridLayout rows="auto, auto, auto" columns="*, 5*, *">
+                                    <Label text="{{ name }}" style="font-weight: bold;" colSpan="2" textWrap="true"/>
+                                    <Label text="&#xf041;" style="padding-left: 30px" class="font-awesome" row="2" tap="viewDivesite"/>
+                                    <Label text="{{ divesite }}" row="2" col="1" textWrap="true" textWrap="true"/>
+                                    <Label text="{{ date + ' um ' + time + ' Uhr'}}" row="1" colSpan="2" textWrap="true"/>
+                                    <Label text="&#xf061;" class="font-awesome" col="3" rowSpan="3" tap="viewDetails" />
+                                </GridLayout>
+                            </ListView.itemTemplate>
+                        </ListView>
+                   </TabViewItem.view>
+                 </TabViewItem>
+                </TabView.items>
+            </TabView>
         </nsDrawer:RadSideDrawer.mainContent>
     </nsDrawer:RadSideDrawer>
 </Page>

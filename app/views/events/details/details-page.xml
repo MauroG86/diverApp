@@ -1,0 +1,22 @@
+<Page
+    class="page"
+    navigatingTo="onNavigatingTo"  
+    xmlns="http://www.nativescript.org/tns.xsd">
+
+    <Page.actionBar>
+        <ActionBar class="action-bar" title="{{ event.name }}">
+            <NavigationButton text="Go Back" android.systemIcon="ic_menu_back" tap="goBack" style="color: #034793"/>
+        </ActionBar>
+    </Page.actionBar>
+    <GridLayout rows="auto, auto, auto, auto, auto, auto, auto, *,  auto">
+        <Label text="{{ event.name }}"/>
+        <Label text="{{ event.type }}" row="1"/>
+        <Label text="{{ event.divesite }}" row="2"/>
+        <Label text="{{ event.date }}" row="3"/>
+        <Label text="{{ event.time }}" row="4" />
+        <Label text="{{ event.public ? 'Öffentlich' : 'Privat' }}" row="5" />
+        <Label text="{{ event.comment}}" textWrap="true" row="6" />
+        <Button visibility="{{ editButtonVisible }}" text="Event bearbeiten" row="8" tap="editEvent"/>
+    </GridLayout>
+
+</Page>
