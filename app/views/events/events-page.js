@@ -18,15 +18,13 @@ var pageData;
 * Use the "onNavigatingTo" handler to initialize the page binding context.
 *************************************************************/
 function onNavigatingTo(args) {
-
     eventsList.empty();
     publicEvents = new observableArray()
     myEvents = new observableArray()
 
     eventsList.load();
 
-    eventsList.forEach(function(element) {
-        
+    eventsList.forEach(function(element) {        
         if (element.public) {
             publicEvents.push(element);
         } else {

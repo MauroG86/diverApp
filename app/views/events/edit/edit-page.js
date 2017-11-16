@@ -3,6 +3,7 @@ var observableModule = require("data/observable")
 var observableArray = require("data/observable-array");
 var ModalPicker = require("nativescript-modal-datetimepicker").ModalDatetimepicker;
 var dialogs = require("ui/dialogs");
+var valueList = require("nativescript-drop-down").ValueList;
 
 var page;
 var event;
@@ -11,13 +12,20 @@ var newEvent;
 var pageData;
 var picker = new ModalPicker();
 var isNewEvent;
-var types;
-var divesites;
+
+var divesites = [];
+divesites.push({ id: 0, name: "Streitköpfle" }); 
+divesites.push({ id: 1, name: "Baggersee Buxtehude" });
+
+var types = new observableArray.ObservableArray();
+types.push("Tauchen");
+types.push("Club");
+types.push("Event");
 
 function validateEvent() {
     if (newEvent.name === "" || newEvent.type === ""
         || newEvent.time === "" || newEvent.date === ""
-        || newEvent.divesite == "") {
+        || newEvent.divesite === undefined) {
         return false;
     }
     return true;
@@ -28,19 +36,19 @@ exports.onNavigatingTo = function(args) {
         return;
     }
 
-    types = new observableArray.ObservableArray();
-    types.push("Tauchen");
-    types.push("Club");
-    types.push("Event");
-
-    divesites = new observableArray.ObservableArray();
-    divesites.push("Streitköpfle");
-    divesites.push("Baggersee Buxtehude");
-
     page = args.object;
     
     isNewEvent = page.navigationContext.newEvent;
     eventsList = page.navigationContext.eventsList;
+
+    var divesitesDD = page.getViewById("divesitesDD");
+    var itemSource = new valueList();
+
+    divesites.forEach(function(element) {
+        itemSource.push({ value: element.id, display: element.name });
+    });
+
+    divesitesDD.items = itemSource;
 
     if (isNewEvent) {
         newEvent = {
@@ -48,7 +56,7 @@ exports.onNavigatingTo = function(args) {
             type: "",
             time: "",
             date: "",
-            divesite: "",
+            divesite: undefined,
             public: false,
             comment: ""
         }
@@ -56,7 +64,8 @@ exports.onNavigatingTo = function(args) {
             event: newEvent,
             types: types,
             divesites: divesites,
-            deleteVisible: "collapse"
+            cancelVisible: "collapse",
+            isNewEvent: true
         });
     } else {
         event = page.navigationContext.event;
@@ -77,8 +86,9 @@ exports.onNavigatingTo = function(args) {
             types: types,
             selectedType: types.indexOf(event.type),
             divesites: divesites,
-            selectedDivesite: types.indexOf(event.divesite),
-            deleteVisible: "visible"
+            selectedDivesite: event.divesite.id,
+            cancelVisible: "visible",
+            isNewEvent: false
         });  
     }
 
@@ -90,7 +100,7 @@ exports.typeChanged = function(args) {
 }
 
 exports.divesiteChanged = function(args) {
-    newEvent.divesite = divesites.getItem(args.newIndex); 
+    newEvent.divesite = divesites[args.newIndex];
 }
 
 exports.discardChanges = function() {
@@ -128,7 +138,9 @@ exports.saveChanges = function() {
 exports.selectDate = function() {
     picker.pickDate({
         title: "Bitte Datum auswählen:",
-        theme: "light"
+        theme: "light",
+        minDate: new Date(),
+        startingDate: new Date()
     }).then((result) => {
         newEvent.date = result.day + "." + result.month + "." + result.year;
         var dateField = page.getViewById("dateField");
@@ -150,10 +162,15 @@ exports.selectTime = function() {
         });
 };
 
-exports.deleteEvent = function() {
-    eventsList.delete(event);
+exports.cancelEvent = function() {
+    event.canceled = true;
+    var date = new Date();
+    var canceledDate = date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear();
+    event.canceledDate = canceledDate;
+    eventsList.update(event);
     navigationOptions = {
-        moduleName: "views/events/events-page",
+        moduleName: "views/events/details/details-page",
+        context: { event: event, eventsList: eventsList },
         backstackVisible: false
     }
     frameModule.topmost().navigate(navigationOptions);

@@ -17,7 +17,7 @@ exports.onNavigatingTo = function(args) {
     event = page.navigationContext.event;
     eventsList = page.navigationContext.eventsList;
 
-    if (event.public) {
+    if (event.public || event.canceled) {
         editButtonVisible = "collapse";
     } else {
         editButtonVisible = "visible";
@@ -43,3 +43,7 @@ exports.editEvent = function() {
     }
     frameModule.topmost().navigate(navigationOptions);
 }
+
+exports.viewDivesite = function(args) {
+  frameModule.topmost().navigate("views/divesite/divesite-page");
+};
