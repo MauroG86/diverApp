@@ -9,9 +9,6 @@ var currentEvent;
 
 var eventsList = new EventsViewModel([]);
 
-var publicEvents;
-var myEvents;
-
 var pageData;
 
 /* ***********************************************************
@@ -19,23 +16,10 @@ var pageData;
 *************************************************************/
 function onNavigatingTo(args) {
     eventsList.empty();
-    publicEvents = new observableArray()
-    myEvents = new observableArray()
-
     eventsList.load();
 
-    eventsList.forEach(function(element) {        
-        if (element.public) {
-            publicEvents.push(element);
-        } else {
-            //for now
-            myEvents.push(element);
-        }
-    });
-
     pageData = new observableModule.fromObject({
-        publicEvents: publicEvents,
-        myEvents: myEvents
+        eventsList: eventsList
     });
 
     page = args.object;

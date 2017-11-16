@@ -6,10 +6,11 @@ Page {
 ListView {
     margin: 5;
     border-radius: 0;
+    separator-color: #000000;
 }
 
 Label {
-    margin: 10;
+    margin: 5;
     horizontal-align: left;
     vertical-align: center;
 }
@@ -31,6 +32,6 @@ Button {
 
 .font-awesome {
     font-family: "FontAwesome";
-    font-size: 35;
+    font-size: 30;
     color: #326ee5;
 }

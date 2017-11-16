@@ -2,8 +2,7 @@
     class="page"
     navigatingTo="onNavigatingTo"  
     xmlns="http://www.nativescript.org/tns.xsd"
-    xmlns:dd="nativescript-drop-down"
-    xmlns:CheckBox="nativescript-checkbox" loaded="pageLoaded">
+    xmlns:dd="nativescript-drop-down">
 
     <Page.actionBar>
         <ActionBar class="action-bar" title="{{ isNewEvent ? 'Neues Event' : 'Event editieren' }}">
@@ -15,15 +14,16 @@
             </ActionItem>
         </ActionBar>
     </Page.actionBar>
-        <GridLayout rows="auto, auto, auto, auto, auto, auto, auto, *, auto">
+    <ScrollView>
+        <GridLayout rows="auto, auto, auto, auto, auto, auto, auto">
             <TextField hint="Name" text="{{ event.name }}"/>
-            <dd:DropDown hint="Typ" items="{{ types }}" selectedIndex="{{ selectedType }}" row="1" selectedIndexChanged="typeChanged" style="color: black; margin-left: -15px"/>
-            <dd:DropDown id="divesitesDD" hint="Veranstaltungsort" selectedIndex="{{ selectedDivesite }}" selectedIndexChanged="divesiteChanged" row="2" style="color: black; margin-left: -15px"/>
-            <TextField id="dateField" hint="Tag" editable="false" text="{{ event.date }}" tap="selectDate" row="3"/>
-            <TextField id="timeField" hint="Uhrzeit" editable="false" text="{{ event.time }}" tap="selectTime" row="4" />
-            <CheckBox:CheckBox text="Öffentlich" checked="{{ event.public }}" row="5"/>
-            <TextView textWrap="true" hint="Kommentar (optional)" text="{{ event.comment }}" row="6"/>
-            <Button visibility="{{ cancelVisible }}" text="Event absagen" tap="cancelEvent" row="8"/>
+            <TextView hint="Kommentar" text="{{ event.comment }}" row="1"/>
+            <TextField id="dateField" hint="Tag" editable="false" text="{{ event.date }}" tap="selectDate" row="2"/>
+            <TextField id="timeField" hint="Uhrzeit" editable="false" text="{{ event.time }}" tap="selectTime" row="3" />
+            <dd:DropDown hint="Typ" items="{{ types }}" selectedIndex="{{ selectedType }}" row="4" selectedIndexChanged="typeChanged" style="color: black; margin-left: -15px"/>
+            <dd:DropDown id="divesitesDD" hint="Veranstaltungsort" selectedIndex="{{ selectedDivesite }}" selectedIndexChanged="divesiteChanged" row="5" style="color: black; margin-left: -15px"/>
+            <Button visibility="{{ cancelVisible }}" text="Event absagen" tap="cancelEvent" row="6"/>
         </GridLayout>
+    </ScrollView>
 
 </Page>

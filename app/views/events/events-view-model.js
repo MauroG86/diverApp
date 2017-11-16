@@ -2,10 +2,23 @@ var observableArray = require("data/observable-array").ObservableArray;
 
 var frameModule = require("ui/frame");
 
-var diveBuddies = [{
+var myProfile = {
   id: 0,
-  name: "Deine Mutter"
-}]
+  name: "Nico B",
+  divebuddies: [{
+    id: 1,
+    name: "Mauro Greco",
+  },{
+    id: 2,
+    name: "Deine Mutter",
+  },{
+    id: 3,
+    name: "Max Mustermann",
+  },{
+    id: 5,
+    name: "Noch jemand",
+  }]
+}
 
 var diveSites = [{
   id: 0,
@@ -14,6 +27,10 @@ var diveSites = [{
 {
   id: 1,
   name: "Baggersee Buxtehude"
+},
+{
+  id: 3,
+  name: "Totes Meer"
 }]
 
 var data = [{
@@ -22,10 +39,11 @@ var data = [{
   type: "Tauchen",
   time: "2018-04-03 08:00:00",
   divesite: 0,
-  public: true,
   comment: "Lasst und das Jahr 2018 mit einem Frühlingstauchen starten!",
   canceled: false,
-  canceledDate: ""
+  canceledDate: "",
+  participants: [{id: 0, status: "Ja"}, {id: 1, status: "Nein"}, {id: 4, status: "Vielleicht"}],
+  creator: 0
 },
 {
   id: 1,
@@ -33,10 +51,23 @@ var data = [{
   type: "Tauchen",
   time: "2018-08-29 16:00:00",
   divesite: 1,
-  public: false,
   comment: "Erst essen, dann tauchen.",
   canceled: false,
-  canceledDate: ""
+  canceledDate: "",
+  participants: [{id: 1, status: "Ja"}, {id: 2, status: "Nein"}, {id: 3, status: "Vielleicht"}],
+  creator: 1
+},
+{
+  id: 3,
+  name: "Grillparty",
+  type: "Event",
+  time: "2018-01-01 20:00:00",
+  divesite: 3,
+  comment: "Grillen halt.",
+  canceled: false,
+  canceledDate: "",
+  participants: [{id: 5, status: "Ja"}],
+  creator: 1
 }];
 
 function EventsViewModel(items) {
@@ -54,17 +85,19 @@ function EventsViewModel(items) {
           var str = element.canceledDate.split("-");
           canceledDate = str[2] + "." + str[1] + "." + str[0];
         }
+
         viewModel.push({
           id: element.id,
           name: element.name,
-          divesite: diveSites[element.divesite],
+          divesite: getDiveSiteByID(element.divesite),
           type: element.type,
           date: day,
           time: date.toLocaleTimeString().substring(0, 5),
-          public: element.public,
           comment: element.comment,
           canceled: element.canceled,
-          canceledDate: canceledDate
+          canceledDate: canceledDate,
+          participants: element.participants,
+          creator: element.creator
         });
       });
     }
@@ -103,6 +136,55 @@ function EventsViewModel(items) {
       data.splice(index, 1);
     }
 
+    viewModel.getParticipants = function(event) {
+      var participants = [];
+      event.participants.forEach(function(element) {
+        var divebuddy = getDiveBuddyByID(element.id);
+        if (divebuddy !== null) {
+          participants.push({name: divebuddy.name, status: element.status});
+        }
+      });
+      return participants;
+    }
+
+    viewModel.getAllDivesites = function() {
+      return diveSites;
+    }
+
+    viewModel.getEventStatus = function(event) {
+      var status = null;
+      event.participants.forEach(function(element) {
+        if (element.id === myProfile.id) {
+          status = element.status;
+        }
+      });
+      return status;
+    }
+
+    viewModel.changeEventStatus = function(event, status) {
+      var isNewParticipant = true;
+      event.participants.forEach(function(element) {
+        if (element.id === myProfile.id) {
+          element.status = status;
+          isNewParticipant = false;
+        }
+      });
+
+      if (isNewParticipant) {
+        event.participants.push({id: myProfile.id, status: status});
+      }
+
+      viewModel.update(event);
+    }
+
+    viewModel.isCreator = function(event) {
+      return event.creator === myProfile.id;
+    }
+
+    viewModel.getProfileID = function() {
+      return myProfile.id;
+    }
+
     return viewModel;
 }
 
@@ -126,10 +208,31 @@ function createEventData(event) {
     type: event.type,
     time: time,
     divesite: event.divesite.id,
-    public: event.public,
     comment: event.comment,
     canceled: event.canceled,
-    canceledDate: canceledDate
+    canceledDate: canceledDate,
+    participants: event.participants,
+    creator: event.creator
   }
+  return res;
+}
+
+function getDiveBuddyByID(id) {
+  var res = null;
+  myProfile.divebuddies.forEach(function(element) {
+    if (element.id === id) {
+      res = element;
+    }
+  });
+  return res;
+}
+
+function getDiveSiteByID(id) {
+  var res = null;
+  diveSites.forEach(function(element) {
+    if (element.id === id) {
+      res = element;
+    }
+  });
   return res;
 }

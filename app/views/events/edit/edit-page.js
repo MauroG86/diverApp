@@ -12,20 +12,13 @@ var newEvent;
 var pageData;
 var picker = new ModalPicker();
 var isNewEvent;
+var divesites;
 
-var divesites = [];
-divesites.push({ id: 0, name: "Streitköpfle" }); 
-divesites.push({ id: 1, name: "Baggersee Buxtehude" });
-
-var types = new observableArray.ObservableArray();
-types.push("Tauchen");
-types.push("Club");
-types.push("Event");
+var types = new observableArray.ObservableArray(["Tauchen", "Club", "Event"]);
 
 function validateEvent() {
     if (newEvent.name === "" || newEvent.type === ""
-        || newEvent.time === "" || newEvent.date === ""
-        || newEvent.divesite === undefined) {
+        || newEvent.time === "" || newEvent.date === "" || newEvent.comment === "") {
         return false;
     }
     return true;
@@ -44,6 +37,7 @@ exports.onNavigatingTo = function(args) {
     var divesitesDD = page.getViewById("divesitesDD");
     var itemSource = new valueList();
 
+    divesites = eventsList.getAllDivesites();
     divesites.forEach(function(element) {
         itemSource.push({ value: element.id, display: element.name });
     });
@@ -56,9 +50,11 @@ exports.onNavigatingTo = function(args) {
             type: "",
             time: "",
             date: "",
-            divesite: undefined,
+            divesite: null,
             public: false,
-            comment: ""
+            comment: "",
+            participants: [],
+            creator: eventsList.getProfileID()
         }
         pageData = new observableModule.fromObject({
             event: newEvent,
@@ -78,7 +74,9 @@ exports.onNavigatingTo = function(args) {
             date: event.date,
             divesite: event.divesite,
             public: event.public,
-            comment: event.comment
+            comment: event.comment,
+            participants: event.participants,
+            creator: event.creator
         }
 
         pageData = new observableModule.fromObject({
@@ -126,6 +124,7 @@ exports.saveChanges = function() {
     } else {
         eventsList.update(newEvent);
     }
+    eventsList.changeEventStatus(newEvent, "Ja");
     navigationOptions = {
         moduleName: "views/events/details/details-page",
         context: { event: newEvent, eventsList: eventsList },

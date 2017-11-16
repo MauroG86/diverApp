@@ -60,42 +60,17 @@
         Always wrap content in a layout component.
         -->
         <nsDrawer:RadSideDrawer.mainContent>
-            <TabView>
-                <TabView.items>
-                 <TabViewItem title="Öffentlich">
-                   <TabViewItem.view>
-                        <ListView items="{{ publicEvents }}" id="publicEventsView" row="0">
-                            <ListView.itemTemplate>
-                                <GridLayout rows="auto, auto, auto, auto" columns="*, 5*, *">
-                                    <Label text="{{ name }}" style="font-weight: bold;" colSpan="2" textWrap="true" />
-                                    <Label visibility="{{ canceled ? 'visible' : 'collapse' }}" text="Abgesagt!" style="color: #c42323;" colSpan="2" textWrap="true" row="1"/>
-                                    <Label text="{{ date + ' um ' + time + ' Uhr'}}" row="2" colSpan="2" textWrap="true"/>
-                                    <Label text="&#xf041;" style="padding-left: 30px" class="font-awesome" row="3" tap="viewDivesite"/>
-                                    <Label text="{{ divesite.name }}" row="3" col="1" textWrap="true"/>
-                                    <Label text="&#xf061;" class="font-awesome" col="3" rowSpan="4" tap="viewDetails" />
-                                </GridLayout>
-                            </ListView.itemTemplate>
-                        </ListView>
-                   </TabViewItem.view>
-                 </TabViewItem>
-                 <TabViewItem title="Meine Events">
-                   <TabViewItem.view>
-                        <ListView items="{{ myEvents }}" id="myEventsView" row="0">
-                            <ListView.itemTemplate>
-                                <GridLayout rows="auto, auto, auto, auto" columns="*, 5*, *">
-                                    <Label text="{{ name }}" style="font-weight: bold;" colSpan="2" textWrap="true" />
-                                    <Label visibility="{{ canceled ? 'visible' : 'collapse' }}" text="Abgesagt!" style="color: #c42323;" colSpan="2" textWrap="true" row="1"/>
-                                    <Label text="{{ date + ' um ' + time + ' Uhr'}}" row="2" colSpan="2" textWrap="true"/>
-                                    <Label text="&#xf041;" style="padding-left: 30px" class="font-awesome" row="3" tap="viewDivesite"/>
-                                    <Label text="{{ divesite.name }}" row="3" col="1" textWrap="true"/>
-                                    <Label text="&#xf061;" class="font-awesome" col="3" rowSpan="4" tap="viewDetails" />
-                                </GridLayout>
-                            </ListView.itemTemplate>
-                        </ListView>
-                   </TabViewItem.view>
-                 </TabViewItem>
-                </TabView.items>
-            </TabView>
+            <ListView items="{{ eventsList }}">
+                <ListView.itemTemplate>
+                    <GridLayout rows="auto, auto, auto, auto" columns="*, 5*, *">
+                        <Label text="{{ name }}" style="font-weight: bold;" colSpan="2" textWrap="true" />
+                        <Label visibility="{{ canceled ? 'visible' : 'collapse' }}" text="Abgesagt!" style="color: #c42323;" colSpan="2" textWrap="true" row="1"/>
+                        <Label visibility="{{ canceled ? 'collapsed' : 'visible' }}" text="{{ date + ' um ' + time + ' Uhr'}}" row="2" colSpan="2" textWrap="true"/>
+                        <Label text="{{ divesite.name }}" row="3" colSpan="2" textWrap="true"/>
+                        <Label text="&#xf061;" class="font-awesome" col="3" rowSpan="4" tap="viewDetails" />
+                    </GridLayout>
+                </ListView.itemTemplate>
+            </ListView>
         </nsDrawer:RadSideDrawer.mainContent>
     </nsDrawer:RadSideDrawer>
 </Page>
