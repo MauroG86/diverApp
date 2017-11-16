@@ -10,6 +10,9 @@
         <ActionItem visibility="{{ editButtonVisible }}">
             <Label text="&#xf040;" class="font-awesome" style="color: #ffffff; padding-right: 35px; font-size: 25;" tap="editEvent"/>
         </ActionItem>
+        <ActionItem visibility="{{ deleteButtonVisible }}">
+            <Label text="&#xf014;" class="font-awesome" style="color: #ffffff; padding-right: 35px; font-size: 25;" tap="deleteEvent"/>
+        </ActionItem>
         </ActionBar>
     </Page.actionBar>
     <TabView>
@@ -20,7 +23,7 @@
                         <GridLayout rows="auto, auto, auto, auto, auto, auto, auto" columns="auto, *, auto">
                             <Label text="{{ 'Event abgesagt am ' + event.canceledDate }}" style="color: #c42323" textWrap="true" visibility="{{ event.canceled ? 'visible' : 'collapsed' }}" colSpan="3"/>
                             <Label text="{{ event.name }}" style="font-weight: bold" row="1" textWrap="true" colSpan="3"/>
-                            <Label text="{{ 'Ort: ' + event.divesite.name + '  &#xf041;'}}" class="font-awesome" row="2" textWrap="true" colSpan="3" tap="viewDivesite"/>
+                            <Label visibility="{{ event.divesite === null ? 'collapsed' : 'visible' }}" text="{{ 'Ort: ' + event.divesite.name + '  &#xf041;'}}" class="font-awesome" row="2" textWrap="true" colSpan="3" tap="viewDivesite"/>
                             <Label text="{{ 'Datum: ' + event.date + ' um ' + event.time + ' Uhr'}}" row="3" textWrap="true" colSpan="3"/>
                             <Label text="{{ 'Typ: ' + event.type }}" row="4" textWrap="true" colSpan="3"/>
                             <Label text="{{ '&quot;' + event.comment + '&quot;'}}" textWrap="true" row="5" colSpan="3"/>

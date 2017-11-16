@@ -1,74 +1,14 @@
 var observableArray = require("data/observable-array").ObservableArray;
-
+var appSettings = require("application-settings");
 var frameModule = require("ui/frame");
 
-var myProfile = {
-  id: 0,
-  name: "Nico B",
-  divebuddies: [{
-    id: 1,
-    name: "Mauro Greco",
-  },{
-    id: 2,
-    name: "Deine Mutter",
-  },{
-    id: 3,
-    name: "Max Mustermann",
-  },{
-    id: 5,
-    name: "Noch jemand",
-  }]
+var data = require("./static_data")
+var events_data;
+
+function getEventsData() {
+  //try to get events per REST later
+  return JSON.parse(appSettings.getString("events", "[]"));;
 }
-
-var diveSites = [{
-  id: 0,
-  name: "Streitköpfle"
-},
-{
-  id: 1,
-  name: "Baggersee Buxtehude"
-},
-{
-  id: 3,
-  name: "Totes Meer"
-}]
-
-var data = [{
-  id: 0,
-  name: "Frühlingstauchen 2018",
-  type: "Tauchen",
-  time: "2018-04-03 08:00:00",
-  divesite: 0,
-  comment: "Lasst und das Jahr 2018 mit einem Frühlingstauchen starten!",
-  canceled: false,
-  canceledDate: "",
-  participants: [{id: 0, status: "Ja"}, {id: 1, status: "Nein"}, {id: 4, status: "Vielleicht"}],
-  creator: 0
-},
-{
-  id: 1,
-  name: "Essen und Nachttauchen",
-  type: "Tauchen",
-  time: "2018-08-29 16:00:00",
-  divesite: 1,
-  comment: "Erst essen, dann tauchen.",
-  canceled: false,
-  canceledDate: "",
-  participants: [{id: 1, status: "Ja"}, {id: 2, status: "Nein"}, {id: 3, status: "Vielleicht"}],
-  creator: 1
-},
-{
-  id: 3,
-  name: "Grillparty",
-  type: "Event",
-  time: "2018-01-01 20:00:00",
-  divesite: 3,
-  comment: "Grillen halt.",
-  canceled: false,
-  canceledDate: "",
-  participants: [{id: 5, status: "Ja"}],
-  creator: 1
-}];
 
 function EventsViewModel(items) {
 
@@ -76,11 +16,17 @@ function EventsViewModel(items) {
 
     viewModel.load = function() {
 
-      data.forEach(function(element) {
+      events_data = getEventsData();
+      if (events_data.length === 0) {
+        //fill with static data for now
+        events_data = data.events_data;
+      }
+
+      events_data.forEach(function(element) {
         var date = new Date(element.time + " UTC");
         var day = date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear();
         
-        var canceledDate = "";
+        var canceledDate = null;
         if (element.canceled) {
           var str = element.canceledDate.split("-");
           canceledDate = str[2] + "." + str[1] + "." + str[0];
@@ -89,7 +35,7 @@ function EventsViewModel(items) {
         viewModel.push({
           id: element.id,
           name: element.name,
-          divesite: getDiveSiteByID(element.divesite),
+          divesite: viewModel.getDiveSiteByID(element.divesite),
           type: element.type,
           date: day,
           time: date.toLocaleTimeString().substring(0, 5),
@@ -100,7 +46,7 @@ function EventsViewModel(items) {
           creator: element.creator
         });
       });
-    }
+    };
 
     viewModel.empty = function() {
         while (viewModel.length) {
@@ -109,31 +55,44 @@ function EventsViewModel(items) {
     };
 
     viewModel.update = function(event) {
-      viewModel.forEach(function(element) {
-        if (element.id === event.id) {
-          viewModel.setItem(viewModel.indexOf(element), event);
+      for (var i = 0; i < viewModel.length; i++) {
+        if (viewModel.getItem(i).id === event.id) {
+          viewModel.setItem(i, event);
+          break;
         }
-      });
+      };
 
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].id === event.id) {
-          data[i] = createEventData(event);
+      for (var i = 0; i < events_data.length; i++) {
+        if (events_data[i].id === event.id) {
+          events_data[i] = createEventData(event);
+          break;
         }
       }
+      appSettings.setString("events", JSON.stringify(events_data));
     }
 
     viewModel.add = function(event) {
-      event.id = viewModel.getItem(viewModel.length - 1).id + 1;
+      viewModel.changeEventStatus(event, "Ja");
       viewModel.push(event);
-      data.push(createEventData(event));
+      events_data.push(createEventData(event));
+      appSettings.setString("events", JSON.stringify(events_data));
     }
 
     viewModel.delete = function(event) {
-      var index = viewModel.indexOf(event);
-      viewModel.splice(index, 1);
+      for (var i = 0; i < viewModel.length; i++) {
+        if (viewModel.getItem(i).id === event.id) {
+          viewModel.splice(i, 1);
+          break;
+        }
+      }
 
-      index = data.indexOf(createEventData(event));
-      data.splice(index, 1);
+      for (var i = 0; i < events_data.length; i++) {
+        if (events_data[i].id === event.id) {
+          events_data.splice(i, 1);
+          break;
+        }
+      }
+      appSettings.setString("events", JSON.stringify(events_data));
     }
 
     viewModel.getParticipants = function(event) {
@@ -141,20 +100,20 @@ function EventsViewModel(items) {
       event.participants.forEach(function(element) {
         var divebuddy = getDiveBuddyByID(element.id);
         if (divebuddy !== null) {
-          participants.push({name: divebuddy.name, status: element.status});
+          participants.push({id: element.id, name: divebuddy.name, status: element.status});
         }
       });
       return participants;
     }
 
     viewModel.getAllDivesites = function() {
-      return diveSites;
+      return data.divesites_data;
     }
 
     viewModel.getEventStatus = function(event) {
       var status = null;
       event.participants.forEach(function(element) {
-        if (element.id === myProfile.id) {
+        if (element.id === data.personal_data.id) {
           status = element.status;
         }
       });
@@ -164,25 +123,33 @@ function EventsViewModel(items) {
     viewModel.changeEventStatus = function(event, status) {
       var isNewParticipant = true;
       event.participants.forEach(function(element) {
-        if (element.id === myProfile.id) {
+        if (element.id === data.personal_data.id) {
           element.status = status;
           isNewParticipant = false;
         }
       });
 
       if (isNewParticipant) {
-        event.participants.push({id: myProfile.id, status: status});
+        event.participants.push({id: data.personal_data.id, status: status});
       }
-
-      viewModel.update(event);
     }
 
     viewModel.isCreator = function(event) {
-      return event.creator === myProfile.id;
+      return event.creator === data.personal_data.id;
     }
 
     viewModel.getProfileID = function() {
-      return myProfile.id;
+      return data.personal_data.id;
+    }
+
+    viewModel.getDiveSiteByID = function(id) {
+      var res = null;
+      data.divesites_data.forEach(function(element) {
+        if (element.id === id) {
+          res = element;
+        }
+      });
+      return res;
     }
 
     return viewModel;
@@ -196,10 +163,15 @@ function createEventData(event) {
   var isodatestring = (new Date(datestring).toISOString());
   var time = isodatestring.split(".")[0].replace("T", " ");
 
-  var canceledDate = "";
+  var canceledDate = null;
   if (event.canceled) {
     str = event.canceledDate.split(".");
     canceledDate = str[2]+ "-" + str[1] + "-" + str[0];
+  }
+
+  var divesiteID = null;
+  if (event.divesite !== null) {
+    divesiteID = event.divesite.id;
   }
 
   var res = {
@@ -207,7 +179,7 @@ function createEventData(event) {
     name: event.name,
     type: event.type,
     time: time,
-    divesite: event.divesite.id,
+    divesite: divesiteID,
     comment: event.comment,
     canceled: event.canceled,
     canceledDate: canceledDate,
@@ -219,17 +191,7 @@ function createEventData(event) {
 
 function getDiveBuddyByID(id) {
   var res = null;
-  myProfile.divebuddies.forEach(function(element) {
-    if (element.id === id) {
-      res = element;
-    }
-  });
-  return res;
-}
-
-function getDiveSiteByID(id) {
-  var res = null;
-  diveSites.forEach(function(element) {
+  data.personal_data.divebuddies.forEach(function(element) {
     if (element.id === id) {
       res = element;
     }

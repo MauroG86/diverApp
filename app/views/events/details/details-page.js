@@ -20,17 +20,25 @@ exports.onNavigatingTo = function(args) {
     event = page.navigationContext.event;
     eventsList = page.navigationContext.eventsList;
 
+    var editButtonVisible;
     if (!eventsList.isCreator(event) || event.canceled) {
         editButtonVisible = "collapse";
     } else {
         editButtonVisible = "visible";
     }
 
+    var deleteButtonVisible;
+    if (eventsList.isCreator(event) && event.canceled) {
+        deleteButtonVisible = "visible";
+    } else {
+        deleteButtonVisible = "collapse";
+    }
 
     var statusIndex = status.indexOf(eventsList.getEventStatus(event));
     pageData = new observableModule.fromObject({
         event: event,
         editButtonVisible: editButtonVisible,
+        deleteButtonVisible: deleteButtonVisible,
         status: status,
         selectedStatus: statusIndex === -1 ? null : statusIndex,
         divebuddiesList: eventsList.getParticipants(event)
@@ -53,13 +61,29 @@ exports.editEvent = function() {
 }
 
 exports.viewDivesite = function(args) {
-    frameModule.topmost().navigate("views/divesite/divesite-page");
+    console.log("Go to divesite " + event.divesite.id +" [" + event.divesite.name + "]");
+    navigationOptions = {
+        moduleName: "views/divesite/divesite-page",
+        context: { divesite: event.divesite.id  }
+    }
+    frameModule.topmost().navigate(navigationOptions);
 };
 
 exports.viewDivebuddy = function(args) {
-    frameModule.topmost().navigate("views/divebuddies/divebuddies-page");
+    var divebuddy = args.view.bindingContext;
+    console.log("Go to divebuddy " + divebuddy.id +" [" + divebuddy.name + "]");
+    navigationOptions = {
+        moduleName: "views/divebuddies/divebuddies-page",
+        context: { divebuddy: divebuddy }
+    }
+    frameModule.topmost().navigate(navigationOptions);
 };
 
 exports.statusChanged = function(args) {
     eventsList.changeEventStatus(event, status.getItem(args.newIndex));
+}
+
+exports.deleteEvent = function() {
+    eventsList.delete(event);
+    frameModule.topmost().goBack();
 }

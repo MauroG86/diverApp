@@ -1,6 +1,7 @@
 var frameModule = require("ui/frame");
 var observableModule = require("data/observable")
 var observableArray = require("data/observable-array").ObservableArray;
+var appSettings = require("application-settings");
 
 var EventsViewModel = require("./events-view-model");
 
@@ -41,17 +42,13 @@ exports.onDrawerButtonTap = onDrawerButtonTap;
 
 
 exports.viewDetails = function(args) {
-    currentEvent = args.view.bindingContext;
+    var currentEvent = args.view.bindingContext;
     navigationOptions = {
         moduleName: "views/events/details/details-page",
         context: { event: currentEvent, eventsList: eventsList },
         backstackVisible: false
     }
     frameModule.topmost().navigate(navigationOptions);
-};
-
-exports.viewDivesite = function(args) {
-  frameModule.topmost().navigate("views/divesite/divesite-page");
 };
 
 exports.newEvent = function() {

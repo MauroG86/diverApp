@@ -12,12 +12,12 @@ var newEvent;
 var pageData;
 var picker = new ModalPicker();
 var isNewEvent;
-var divesites;
+var divesiteItemSource;
 
 var types = new observableArray.ObservableArray(["Tauchen", "Club", "Event"]);
 
 function validateEvent() {
-    if (newEvent.name === "" || newEvent.type === ""
+    if (newEvent.name === "" || newEvent.type === "" || newEvent.divesite === undefined
         || newEvent.time === "" || newEvent.date === "" || newEvent.comment === "") {
         return false;
     }
@@ -33,39 +33,44 @@ exports.onNavigatingTo = function(args) {
     
     isNewEvent = page.navigationContext.newEvent;
     eventsList = page.navigationContext.eventsList;
+    event = page.navigationContext.event;
 
     var divesitesDD = page.getViewById("divesitesDD");
-    var itemSource = new valueList();
+    divesiteItemSource = new valueList();
 
-    divesites = eventsList.getAllDivesites();
-    divesites.forEach(function(element) {
-        itemSource.push({ value: element.id, display: element.name });
-    });
+    var selectedDivesite = 0;
+    var allDiveSites = eventsList.getAllDivesites();
+    divesiteItemSource.push({ value: null, display: "<Nichts ausgewählt>" });
+    for (var i = 0; i < allDiveSites.length; i++) {
+        divesiteItemSource.push({ value: allDiveSites[i].id, display: allDiveSites[i].name });
+        if (!isNewEvent && event.divesite !== null && event.divesite.id === allDiveSites[i].id) {
+            selectedDivesite = i + 1;        
+        }    
+    }
 
-    divesitesDD.items = itemSource;
+    divesitesDD.items = divesiteItemSource;
 
     if (isNewEvent) {
         newEvent = {
+            id: 0,
             name: "",
             type: "",
             time: "",
             date: "",
-            divesite: null,
-            public: false,
+            divesite: undefined,
             comment: "",
             participants: [],
-            creator: eventsList.getProfileID()
+            creator: eventsList.getProfileID(),
+            canceled: false,
+            canceledDate: null
         }
         pageData = new observableModule.fromObject({
             event: newEvent,
             types: types,
-            divesites: divesites,
             cancelVisible: "collapse",
             isNewEvent: true
         });
     } else {
-        event = page.navigationContext.event;
-
         newEvent = {
             id: event.id,
             name: event.name,
@@ -73,21 +78,22 @@ exports.onNavigatingTo = function(args) {
             time: event.time,
             date: event.date,
             divesite: event.divesite,
-            public: event.public,
             comment: event.comment,
             participants: event.participants,
-            creator: event.creator
+            creator: event.creator,
+            canceled: event.canceled,
+            canceledDate: event.canceledDate
         }
 
         pageData = new observableModule.fromObject({
             event: newEvent,
             types: types,
             selectedType: types.indexOf(event.type),
-            divesites: divesites,
-            selectedDivesite: event.divesite.id,
+            selectedDivesite: selectedDivesite,
             cancelVisible: "visible",
             isNewEvent: false
         });  
+
     }
 
     page.bindingContext = pageData;
@@ -98,7 +104,7 @@ exports.typeChanged = function(args) {
 }
 
 exports.divesiteChanged = function(args) {
-    newEvent.divesite = divesites[args.newIndex];
+    newEvent.divesite = eventsList.getDiveSiteByID(divesiteItemSource.getValue(args.newIndex));
 }
 
 exports.discardChanges = function() {
@@ -124,7 +130,6 @@ exports.saveChanges = function() {
     } else {
         eventsList.update(newEvent);
     }
-    eventsList.changeEventStatus(newEvent, "Ja");
     navigationOptions = {
         moduleName: "views/events/details/details-page",
         context: { event: newEvent, eventsList: eventsList },
