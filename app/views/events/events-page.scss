@@ -1,17 +1,17 @@
 Page {
-    background-color: white;
-    font-size: 20;
+  background-color: white;
+  font-size: 20;
 }
 
 ListView {
-    margin: 5;
-    border-radius: 0;
-    separator-color: #000000;
+  margin: 5;
+  border-radius: 0;
+  separator-color: #000000;
 }
 
 Label {
-    horizontal-align: left;
-    vertical-align: center;
+  horizontal-align: left;
+  vertical-align: center;
 }
 
 Button {
@@ -20,7 +20,7 @@ Button {
 }
 
 .font-awesome {
-    font-family: "FontAwesome";
-    font-size: 30;
-    color: #326ee5;
+  font-family: "FontAwesome";
+  font-size: 30;
+  color: #326ee5;
 }

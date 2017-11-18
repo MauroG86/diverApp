@@ -1,4 +1,4 @@
-exports.personal_data = {
+exports.user_data = {
   id: 1,
   name: "Nico B",
   divebuddies: [
@@ -33,18 +33,6 @@ exports.divesites_data = [
 }]
 
 exports.events_data = [{
-  id: 2,
-  name: "Frühlingstauchen 2018",
-  type: "Tauchen",
-  time: "2018-04-03 08:00:00",
-  divesite: 2,
-  comment: "Lasst und das Jahr 2018 mit einem Frühlingstauchen starten!",
-  canceled: false,
-  canceledDate: null,
-  participants: [{id: 1, status: "Ja"}, {id: 2, status: "Nein"}, {id: 4, status: "Vielleicht"}],
-  creator: 1
-},
-{
   id: 3,
   name: "Essen und Nachttauchen",
   type: "Tauchen",
@@ -55,8 +43,18 @@ exports.events_data = [{
   canceledDate: null,
   participants: [{id: 2, status: "Ja"}, {id: 3, status: "Nein"}, {id: 5, status: "Vielleicht"}],
   creator: 2
-},
-{
+},{
+  id: 2,
+  name: "Frühlingstauchen 2018",
+  type: "Tauchen",
+  time: "2018-04-03 08:00:00",
+  divesite: 2,
+  comment: "Lasst und das Jahr 2018 mit einem Frühlingstauchen starten!",
+  canceled: false,
+  canceledDate: null,
+  participants: [{id: 1, status: "Ja"}, {id: 2, status: "Nein"}, {id: 4, status: "Vielleicht"}],
+  creator: 1
+},{
   id: 5,
   name: "Weihnachtsfeier",
   type: "Club",

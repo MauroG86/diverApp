@@ -1,61 +1,43 @@
 var frameModule = require("ui/frame");
 var observableModule = require("data/observable")
-var observableArray = require("data/observable-array").ObservableArray;
-var appSettings = require("application-settings");
 
 var EventsViewModel = require("./events-view-model");
 
 var page;
-var currentEvent;
 
-var eventsList = new EventsViewModel([]);
+var eventsModel = new EventsViewModel();
 
-var pageData;
+exports.onNavigatingTo = function(args) {
+  eventsModel.empty();
+  eventsModel.load();
 
-/* ***********************************************************
-* Use the "onNavigatingTo" handler to initialize the page binding context.
-*************************************************************/
-function onNavigatingTo(args) {
-    eventsList.empty();
-    eventsList.load();
+  var pageData = new observableModule.fromObject({
+    eventsModel: eventsModel
+  });
 
-    pageData = new observableModule.fromObject({
-        eventsList: eventsList
-    });
-
-    page = args.object;
-    page.bindingContext = pageData;
+  page = args.object;
+  page.bindingContext = pageData;
 }
 
-/* ***********************************************************
- * According to guidelines, if you have a drawer on your page, you should always
- * have a button that opens it. Get a reference to the RadSideDrawer view and
- * use the showDrawer() function to open the app drawer section.
- *************************************************************/
-function onDrawerButtonTap(args) {
-    const sideDrawer = frameModule.topmost().getViewById("sideDrawer");
-    sideDrawer.showDrawer();
+exports.onDrawerButtonTap = function(args) {
+  var sideDrawer = frameModule.topmost().getViewById("sideDrawer");
+  sideDrawer.showDrawer();
 }
-
-exports.onNavigatingTo = onNavigatingTo;
-exports.onDrawerButtonTap = onDrawerButtonTap;
-
 
 exports.viewDetails = function(args) {
-    var currentEvent = args.view.bindingContext;
-    navigationOptions = {
-        moduleName: "views/events/details/details-page",
-        context: { event: currentEvent, eventsList: eventsList },
-        backstackVisible: false
-    }
-    frameModule.topmost().navigate(navigationOptions);
+  var event = args.view.bindingContext;
+  var navigationOptions = {
+    moduleName: "views/events/details/details-page",
+    context: { event: event, eventsModel: eventsModel }
+  }
+  frameModule.topmost().navigate(navigationOptions);
 };
 
 exports.newEvent = function() {
-    navigationOptions = {
-        moduleName: "views/events/edit/edit-page",
-        context: { newEvent: true, eventsList: eventsList },
-        backstackVisible: false
-    }
-    frameModule.topmost().navigate(navigationOptions);  
+  var navigationOptions = {
+    moduleName: "views/events/edit/edit-page",
+    context: { isNewEvent: true, event: null, eventsModel: eventsModel },
+    backstackVisible: false
+  }
+  frameModule.topmost().navigate(navigationOptions);  
 }
